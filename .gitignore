@@ -1,5 +1,11 @@
 # Custom
 venv_cv
+.vscode
+data/external/
+data/interim/
+data/processed/
+data/raw/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
