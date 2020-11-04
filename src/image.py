@@ -1,4 +1,5 @@
 from typing import List, Set
+from random import random
 
 import cv2
 import numpy as np
@@ -19,7 +20,7 @@ class Image:
         self,
         bnd_box
     ) -> np.array:
-        #  return cropped bounding box
+        #  returns cropped bounding box
         #  allows to crop rotated bnd boxes
 
         img = self.image
@@ -47,3 +48,29 @@ class Image:
         warped = cv2.warpPerspective(img, M, (width, height))
 
         return warped
+
+    def get_random_box(self) -> np.array:
+        #  returns image cropped by random bnd box
+
+        xc = int(self.image.shape[1] * random())
+        yc = int(self.image.shape[0] * random())
+        w = 64
+        h = 32
+
+        top_left_x = xc - int(w/2)
+        top_left_y = yc - int(h/2)
+
+        top_right_x = xc + int(w/2)
+        top_right_y = yc - int(h/2)
+
+        bottom_left_x = xc - int(w/2)
+        bottom_left_y = yc + int(h/2)
+
+        bottom_right_x = xc + int(w/2)
+        bottom_right_y = yc + int(h/2)
+
+        return self.get_car((
+            top_left_x, top_left_y,
+            top_right_x, top_right_y,
+            bottom_left_x, bottom_left_y,
+            bottom_right_x, bottom_right_y))
