@@ -47,7 +47,7 @@ class HOGDescriptor(ABC):
             orientations=self.orientations,
             cells_per_block=self.cells_per_block,
             pixels_per_cell=self.pixels_per_cell,
-            multichannel=self.multichannel,
+            multichannel=True,
             visualize=self.visualize
         )
 

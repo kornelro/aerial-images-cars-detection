@@ -46,7 +46,7 @@ class RawImageToFeatures(Pipeline):
         features = np.array([])
         for descriptor in self.descriptors:
             features = np.concatenate(
-                features, descriptor.process(image)
+                (features, descriptor.process(image)[0])
             )
 
         return features

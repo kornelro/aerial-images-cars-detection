@@ -67,6 +67,6 @@ class RotateToHorizontal(Processor):
     ) -> np.array:
 
         if image.shape[0] > image.shape[1]:
-            image = self.rotate(image)
+            image = self.rotate.process(image)
 
         return image

@@ -49,25 +49,29 @@ class Image:
 
         return warped
 
-    def get_random_box(self) -> np.array:
+    def get_random_box(
+        self,
+        width: int,
+        height: int
+    ) -> np.array:
         #  returns image cropped by random bnd box
 
         xc = int(self.image.shape[1] * random())
         yc = int(self.image.shape[0] * random())
-        w = 64
-        h = 32
+        w = width
+        h = height
 
         top_left_x = xc - int(w/2)
-        top_left_y = yc - int(h/2)
+        top_left_y = yc + int(h/2)
 
         top_right_x = xc + int(w/2)
-        top_right_y = yc - int(h/2)
+        top_right_y = yc + int(h/2)
 
         bottom_left_x = xc - int(w/2)
-        bottom_left_y = yc + int(h/2)
+        bottom_left_y = yc - int(h/2)
 
         bottom_right_x = xc + int(w/2)
-        bottom_right_y = yc + int(h/2)
+        bottom_right_y = yc - int(h/2)
 
         return self.get_car((
             top_left_x, top_left_y,

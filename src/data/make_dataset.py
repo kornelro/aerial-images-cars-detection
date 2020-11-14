@@ -18,6 +18,7 @@ from ..features.pipelines import RawImageToFeatures
 # @click.argument('images_files_type', type=Tuple[str])
 # @click.argument('annotations_files_type', type=Tuple[str])
 # @click.argument('process_pipeline', type=RawImageToFeatures)
+# @click.argument('negative_images_size', type=Tuple[int, int])
 # @click.argument('negative_examples_size', type=float)
 # @click.argument('workers', type=int)
 # @click.argument('verbose', type=bool)
@@ -28,6 +29,7 @@ def make_dataset(
     images_files_types: Tuple[str],
     annotations_files_types: Tuple[str],
     process_pipeline: RawImageToFeatures,
+    negative_images_size: Tuple[int, int],
     negative_examples_size: float = 0.5,
     workers: int = 0,
     verbose: bool = True
@@ -47,7 +49,7 @@ def make_dataset(
     )
 
     data = []
-    logger.info('Croping cars...')
+    logger.info('Cropping cars...')
     for image in tqdm(images, disable=tqdm_disable):
         for bnd_box in image.bnd_boxes:
             data.append((
@@ -64,10 +66,13 @@ def make_dataset(
         disable=tqdm_disable
     ):
         image = random.choice(images)
-        data.append(
-            image.get_car(image.get_random_box()),
+        data.append((
+            image.get_random_box(
+                negative_images_size[0],
+                negative_images_size[1]
+            ),
             0
-        )
+        ))
 
     logger.info('Processing images...')
     data = build_features(
