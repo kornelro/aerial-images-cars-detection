@@ -31,7 +31,6 @@ def build_features(
                     pipeline=pipeline
                 ),
                 images_with_classes,
-
             )
     else:
         for image_with_class in tqdm(images_with_classes):

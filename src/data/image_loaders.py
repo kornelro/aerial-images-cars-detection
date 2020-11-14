@@ -2,7 +2,7 @@ import cv2
 from .image import Image
 from abc import ABC, abstractmethod
 import numpy as np
-from typing import List, Set
+from typing import List, Set, Tuple
 
 
 class ImageLoader(ABC):
@@ -55,6 +55,55 @@ class AerialCarsImageLoader(ImageLoader):
                 yc = int(image.shape[0] * float(ann_row[2]))
                 w = int(image.shape[0] * float(ann_row[3]))
                 h = int(image.shape[1] * float(ann_row[4]))
+
+                top_left_x = xc - int(w/2)
+                top_left_y = yc + int(h/2)
+
+                top_right_x = xc + int(w/2)
+                top_right_y = yc + int(h/2)
+
+                bottom_left_x = xc - int(w/2)
+                bottom_left_y = yc - int(h/2)
+
+                bottom_right_x = xc + int(w/2)
+                bottom_right_y = yc - int(h/2)
+
+                annotations.append((
+                    top_left_x, top_left_y,
+                    top_right_x, top_right_y,
+                    bottom_left_x, bottom_left_y,
+                    bottom_right_x, bottom_right_y))
+
+        return annotations
+
+
+class AerialCarsFixedSizeImageLoader(ImageLoader):
+
+    def __init__(
+        self,
+        bnd_box_size: Tuple[int, int]
+    ):
+        super().__init__()
+        self.bnd_box_size = bnd_box_size
+
+    def read_bnd_boxes(
+        self,
+        annotation_file: str,
+        image: np.array
+    ) -> List[Set[float]]:
+
+        annotations = []
+
+        for ann_row in annotation_file.split('\n'):
+            ann_row = ann_row.split(' ')
+
+            if ann_row[0] == '0':
+                # TODO consider other classes
+
+                xc = int(image.shape[1] * float(ann_row[1]))
+                yc = int(image.shape[0] * float(ann_row[2]))
+                w = self.bnd_box_size[0]
+                h = self.bnd_box_size[1]
 
                 top_left_x = xc - int(w/2)
                 top_left_y = yc + int(h/2)
