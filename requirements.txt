@@ -8,8 +8,8 @@ coverage
 awscli
 flake8
 python-dotenv>=0.5.1
-numpy
+numpy==1.19.3
 opencv-python
 tqdm
 sklearn
-skimage
+scikit-image
