@@ -49,7 +49,8 @@ class Detector(ABC):
         self,
         image: np.array,
         workers: int = 0,
-        verbose: bool = True
+        verbose: bool = True,
+        
     ) -> List[Set[float]]:
         pass
 
@@ -60,7 +61,7 @@ class SliderDetector(Detector):
         self,
         sliding_window: Slider,
         process_pipeline: RawImageToFeatures,
-        classifier: Classifier
+        classifier: Classifier,
     ):
         super().__init__()
         self.sliding_window = sliding_window
@@ -71,7 +72,7 @@ class SliderDetector(Detector):
         self,
         image: Image,
         workers: int = 0,
-        verbose: bool = True
+        verbose: bool = True,
     ) -> List[Set[float]]:
 
         tqdm_dsiable = not verbose
@@ -86,7 +87,7 @@ class SliderDetector(Detector):
 
                 cropped_image = image.get_car(bnd_box)
                 features = self.process_pipeline.process(cropped_image)
-                prediction = self.classifier.predict(features.reshape(1, -1))
+                prediction = self.classifier.predict(features)
 
                 if prediction == 1:
                     detected_bnd_boxes.append(bnd_box)

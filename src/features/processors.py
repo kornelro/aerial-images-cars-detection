@@ -70,3 +70,20 @@ class RotateToHorizontal(Processor):
             image = self.rotate.process(image)
 
         return image
+
+
+class NormImage(Processor):
+
+    def __init__(
+        self,
+        max_v: int = 256
+    ):
+        super().__init__()
+        self.max_v = max_v
+
+    def process(
+        self,
+        image: np.array
+    ) -> np.array:
+
+        return image / self.max_v

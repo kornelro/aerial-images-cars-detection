@@ -50,3 +50,23 @@ class RawImageToFeatures(Pipeline):
             )
 
         return features
+
+
+class RawImageToImage(Pipeline):
+
+    def __init__(
+        self,
+        processors: List[Processor] = []
+    ):
+        super().__init__()
+        self.processors = processors
+
+    def process(
+        self,
+        image: np.array
+    ) -> np.array:
+
+        for processor in self.processors:
+            image = processor.process(image)
+
+        return image
