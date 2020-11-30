@@ -240,7 +240,8 @@ class VehiculesSquareImageLoader(ImageLoader):
                 ann_row = ann_row.split(' ')
 
                 if (
-                    (ann_row[3] == '1')  # object is a car
+                    (len(ann_row) == 14)  # porper annotation
+                    and (ann_row[3] == '1')  # object is a car
                     and (ann_row[4] == '1')  # entirely in image
                     and (ann_row[5] == '0')  # not occluded
                 ):
@@ -334,5 +335,66 @@ class VehiculesFixedSizeImageLoader(ImageLoader):
                     top_right_x, top_right_y,
                     bottom_left_x, bottom_left_y,
                     bottom_right_x, bottom_right_y))
+
+        return annotations
+
+
+class DOTASquareImageLoader(ImageLoader):
+    def read_bnd_boxes(
+            self,
+            annotation_file: str,
+            image: np.array
+    ) -> List[Set[float]]:
+
+        annotations = []
+
+        for ann_row in annotation_file.split('\n'):
+            if (len(ann_row) > 0):
+                ann_row = ann_row.split(' ')
+
+                if (
+                    (len(ann_row) == 10)  # porper annotation
+                    and (ann_row[8] == 'small-vehicle')  # object is a car
+                    # and (ann_row[9] == '0')  # not difficult to detect
+                ):
+                    # TODO consider other values
+
+                    x_1, y_1 = int(float(ann_row[0])), int(float(ann_row[1]))
+                    x_2, y_2 = int(float(ann_row[2])), int(float(ann_row[3]))
+                    x_3, y_3 = int(float(ann_row[4])), int(float(ann_row[5]))
+                    x_4, y_4 = int(float(ann_row[6])), int(float(ann_row[7]))
+
+                    polygon = [[x_1, y_1], [x_2, y_2], [x_3, y_3], [x_4, y_4]]
+                    points = np.array(polygon, np.int32)
+                    top_left_x, top_left_y, h, w = cv2.boundingRect(points)
+
+                    xc = top_left_x + int(w / 2)
+                    yc = top_left_y + int(h / 2)
+
+                    if (w > 40) or (h > 40):
+                        # TODO as parameter in every loader
+
+                        if w > h:
+                            k = w
+                        else:
+                            k = h
+
+                        top_left_x = xc - int(k/2)
+                        top_left_y = yc + int(k/2)
+
+                        top_right_x = xc + int(k/2)
+                        top_right_y = yc + int(k/2)
+
+                        bottom_left_x = xc - int(k/2)
+                        bottom_left_y = yc - int(k/2)
+
+                        bottom_right_x = xc + int(k/2)
+                        bottom_right_y = yc - int(k/2)
+
+                        annotations.append((
+                            top_left_x, top_left_y,
+                            top_right_x, top_right_y,
+                            bottom_left_x, bottom_left_y,
+                            bottom_right_x, bottom_right_y))
 
         return annotations
