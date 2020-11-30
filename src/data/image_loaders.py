@@ -77,6 +77,53 @@ class AerialCarsImageLoader(ImageLoader):
         return annotations
 
 
+class AerialCarsSquareImageLoader(ImageLoader):
+
+    def read_bnd_boxes(
+        self,
+        annotation_file: str,
+        image: np.array
+    ) -> List[Set[float]]:
+
+        annotations = []
+
+        for ann_row in annotation_file.split('\n'):
+            ann_row = ann_row.split(' ')
+
+            if ann_row[0] == '0':
+                # TODO consider other classes
+
+                xc = int(image.shape[1] * float(ann_row[1]))
+                yc = int(image.shape[0] * float(ann_row[2]))
+                w = int(image.shape[0] * float(ann_row[3]))
+                h = int(image.shape[1] * float(ann_row[4]))
+
+                if w > h:
+                    k = w
+                else:
+                    k = h
+
+                top_left_x = xc - int(k/2)
+                top_left_y = yc + int(k/2)
+
+                top_right_x = xc + int(k/2)
+                top_right_y = yc + int(k/2)
+
+                bottom_left_x = xc - int(k/2)
+                bottom_left_y = yc - int(k/2)
+
+                bottom_right_x = xc + int(k/2)
+                bottom_right_y = yc - int(k/2)
+
+                annotations.append((
+                    top_left_x, top_left_y,
+                    top_right_x, top_right_y,
+                    bottom_left_x, bottom_left_y,
+                    bottom_right_x, bottom_right_y))
+
+        return annotations
+
+
 class AerialCarsFixedSizeImageLoader(ImageLoader):
 
     def __init__(
@@ -179,7 +226,66 @@ class VehiculesImageLoader(ImageLoader):
         return annotations
 
 
-class VehiculesFixedImageLoader(ImageLoader):
+class VehiculesSquareImageLoader(ImageLoader):
+    def read_bnd_boxes(
+            self,
+            annotation_file: str,
+            image: np.array
+    ) -> List[Set[float]]:
+
+        annotations = []
+
+        for ann_row in annotation_file.split('\n'):
+            if (len(ann_row) > 0):
+                ann_row = ann_row.split(' ')
+
+                if (
+                    (ann_row[3] == '1')  # object is a car
+                    and (ann_row[4] == '1')  # entirely in image
+                    and (ann_row[5] == '0')  # not occluded
+                ):
+                    # TODO consider other values
+                    # TODO similar ifs for othe Vehicules loaders
+
+                    xc = int(float(ann_row[0]))
+                    yc = int(float(ann_row[1]))
+
+                    x_1, y_1 = int(ann_row[6]), int(ann_row[6 + 4])
+                    x_2, y_2 = int(ann_row[7]), int(ann_row[7 + 4])
+                    x_3, y_3 = int(ann_row[8]), int(ann_row[8 + 4])
+                    x_4, y_4 = int(ann_row[9]), int(ann_row[9 + 4])
+
+                    polygon = [[x_1, y_1], [x_2, y_2], [x_3, y_3], [x_4, y_4]]
+                    points = np.array(polygon, np.int32)
+                    top_left_x, top_left_y, h, w = cv2.boundingRect(points)
+
+                    if w > h:
+                        k = w
+                    else:
+                        k = h
+
+                    top_left_x = xc - int(k/2)
+                    top_left_y = yc + int(k/2)
+
+                    top_right_x = xc + int(k/2)
+                    top_right_y = yc + int(k/2)
+
+                    bottom_left_x = xc - int(k/2)
+                    bottom_left_y = yc - int(k/2)
+
+                    bottom_right_x = xc + int(k/2)
+                    bottom_right_y = yc - int(k/2)
+
+                    annotations.append((
+                        top_left_x, top_left_y,
+                        top_right_x, top_right_y,
+                        bottom_left_x, bottom_left_y,
+                        bottom_right_x, bottom_right_y))
+
+        return annotations
+
+
+class VehiculesFixedSizeImageLoader(ImageLoader):
 
     def __init__(
             self,
