@@ -7,8 +7,8 @@ import cv2
 import numpy as np
 from src.data.image import Image
 from src.data.sliders import Slider
-from src.features.pipelines import RawImageToFeatures
-from src.models.classifiers import Classifier
+from src.features.pipelines import RawImageToFeatures, RawImageToImage
+from src.models.classifiers import Classifier, NNClassifier
 from tqdm import tqdm
 
 import logging
@@ -125,3 +125,38 @@ class SliderDetector(Detector):
             result = bnd_box
 
         return result
+
+
+class NNSliderDetector(Detector):
+
+    def __init__(
+        self,
+        sliding_window: Slider,
+        process_pipeline: RawImageToImage,
+        classifier: NNClassifier,
+    ):
+        super().__init__()
+        self.sliding_window = sliding_window
+        self.process_pipeline = process_pipeline
+        self.classifier = classifier
+
+    def detect(
+        self,
+        image: Image,
+        workers: int = 0,
+        verbose: bool = True,
+    ) -> List[Set[float]]:
+
+        detected_bnd_boxes = []
+
+        bnd_boxes = [b for b in self.sliding_window(image.image)]
+        cropped_images = [
+            self.process_pipeline.process(image.get_car(b)) for b in bnd_boxes
+        ]
+        predictions = self.classifier.predict(cropped_images)
+
+        for i in range(len(predictions)):
+            if predictions[i] == 1:
+                detected_bnd_boxes.append(bnd_boxes[i])
+
+        return detected_bnd_boxes
