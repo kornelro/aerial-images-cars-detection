@@ -53,12 +53,3 @@ def download(file_id, out_dir: str, unpack=True, zip_name='') -> None:
         if out_dir.endswith('/'):
             out_dir = out_dir[0:-1]
         shutil.move('./'+zip_name, out_dir)
-
-
-def cat(outfilename, *infilenames):
-    with open(outfilename, 'w') as outfile:
-        for infilename in infilenames:
-            with open(infilename) as infile:
-                for line in infile:
-                    if line.strip():
-                        outfile.write(line)
