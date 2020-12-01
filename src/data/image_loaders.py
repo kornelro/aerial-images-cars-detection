@@ -7,8 +7,11 @@ from typing import List, Set, Tuple
 
 class ImageLoader(ABC):
 
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        min_side_of_box: int = 0
+    ):
+        self.min_side_of_box = min_side_of_box
 
     def load_image(
         self,
@@ -56,23 +59,28 @@ class AerialCarsImageLoader(ImageLoader):
                 w = int(image.shape[0] * float(ann_row[3]))
                 h = int(image.shape[1] * float(ann_row[4]))
 
-                top_left_x = xc - int(w/2)
-                top_left_y = yc + int(h/2)
+                if (
+                    (w >= self.min_side_of_box)
+                    or (h >= self.min_side_of_box)
+                ):
 
-                top_right_x = xc + int(w/2)
-                top_right_y = yc + int(h/2)
+                    top_left_x = xc - int(w/2)
+                    top_left_y = yc + int(h/2)
 
-                bottom_left_x = xc - int(w/2)
-                bottom_left_y = yc - int(h/2)
+                    top_right_x = xc + int(w/2)
+                    top_right_y = yc + int(h/2)
 
-                bottom_right_x = xc + int(w/2)
-                bottom_right_y = yc - int(h/2)
+                    bottom_left_x = xc - int(w/2)
+                    bottom_left_y = yc - int(h/2)
 
-                annotations.append((
-                    top_left_x, top_left_y,
-                    top_right_x, top_right_y,
-                    bottom_left_x, bottom_left_y,
-                    bottom_right_x, bottom_right_y))
+                    bottom_right_x = xc + int(w/2)
+                    bottom_right_y = yc - int(h/2)
+
+                    annotations.append((
+                        top_left_x, top_left_y,
+                        top_right_x, top_right_y,
+                        bottom_left_x, bottom_left_y,
+                        bottom_right_x, bottom_right_y))
 
         return annotations
 
@@ -98,28 +106,33 @@ class AerialCarsSquareImageLoader(ImageLoader):
                 w = int(image.shape[0] * float(ann_row[3]))
                 h = int(image.shape[1] * float(ann_row[4]))
 
-                if w > h:
-                    k = w
-                else:
-                    k = h
+                if (
+                    (w >= self.min_side_of_box)
+                    or (h >= self.min_side_of_box)
+                ):
 
-                top_left_x = xc - int(k/2)
-                top_left_y = yc + int(k/2)
+                    if w > h:
+                        k = w
+                    else:
+                        k = h
 
-                top_right_x = xc + int(k/2)
-                top_right_y = yc + int(k/2)
+                    top_left_x = xc - int(k/2)
+                    top_left_y = yc + int(k/2)
 
-                bottom_left_x = xc - int(k/2)
-                bottom_left_y = yc - int(k/2)
+                    top_right_x = xc + int(k/2)
+                    top_right_y = yc + int(k/2)
 
-                bottom_right_x = xc + int(k/2)
-                bottom_right_y = yc - int(k/2)
+                    bottom_left_x = xc - int(k/2)
+                    bottom_left_y = yc - int(k/2)
 
-                annotations.append((
-                    top_left_x, top_left_y,
-                    top_right_x, top_right_y,
-                    bottom_left_x, bottom_left_y,
-                    bottom_right_x, bottom_right_y))
+                    bottom_right_x = xc + int(k/2)
+                    bottom_right_y = yc - int(k/2)
+
+                    annotations.append((
+                        top_left_x, top_left_y,
+                        top_right_x, top_right_y,
+                        bottom_left_x, bottom_left_y,
+                        bottom_right_x, bottom_right_y))
 
         return annotations
 
@@ -128,9 +141,10 @@ class AerialCarsFixedSizeImageLoader(ImageLoader):
 
     def __init__(
         self,
-        bnd_box_size: Tuple[int, int]
+        bnd_box_size: Tuple[int, int],
+        min_side_of_box: int = 0
     ):
-        super().__init__()
+        super().__init__(min_side_of_box)
         self.bnd_box_size = bnd_box_size
 
     def read_bnd_boxes(
@@ -149,36 +163,49 @@ class AerialCarsFixedSizeImageLoader(ImageLoader):
 
                 xc = int(image.shape[1] * float(ann_row[1]))
                 yc = int(image.shape[0] * float(ann_row[2]))
-                w = self.bnd_box_size[0]
-                h = self.bnd_box_size[1]
+                w = int(image.shape[0] * float(ann_row[3]))
+                h = int(image.shape[1] * float(ann_row[4]))
 
-                top_left_x = xc - int(w/2)
-                top_left_y = yc + int(h/2)
+                if (
+                    (w >= self.min_side_of_box)
+                    or (h >= self.min_side_of_box)
+                ):
 
-                top_right_x = xc + int(w/2)
-                top_right_y = yc + int(h/2)
+                    w = self.bnd_box_size[0]
+                    h = self.bnd_box_size[1]
 
-                bottom_left_x = xc - int(w/2)
-                bottom_left_y = yc - int(h/2)
+                    top_left_x = xc - int(w/2)
+                    top_left_y = yc + int(h/2)
 
-                bottom_right_x = xc + int(w/2)
-                bottom_right_y = yc - int(h/2)
+                    top_right_x = xc + int(w/2)
+                    top_right_y = yc + int(h/2)
 
-                annotations.append((
-                    top_left_x, top_left_y,
-                    top_right_x, top_right_y,
-                    bottom_left_x, bottom_left_y,
-                    bottom_right_x, bottom_right_y))
+                    bottom_left_x = xc - int(w/2)
+                    bottom_left_y = yc - int(h/2)
+
+                    bottom_right_x = xc + int(w/2)
+                    bottom_right_y = yc - int(h/2)
+
+                    annotations.append((
+                        top_left_x, top_left_y,
+                        top_right_x, top_right_y,
+                        bottom_left_x, bottom_left_y,
+                        bottom_right_x, bottom_right_y))
 
         return annotations
 
 
 class VehiculesImageLoader(ImageLoader):
+
     def read_bnd_boxes(
             self,
             annotation_file: str,
             image: np.array
     ) -> List[Set[float]]:
+        # TODO loader to fix
+        # TODO add ifs like in squre loaders
+        # TODO add min_side_of_box
+        # TODO clean code
 
         annotations = []
 
@@ -227,6 +254,7 @@ class VehiculesImageLoader(ImageLoader):
 
 
 class VehiculesSquareImageLoader(ImageLoader):
+
     def read_bnd_boxes(
             self,
             annotation_file: str,
@@ -260,28 +288,33 @@ class VehiculesSquareImageLoader(ImageLoader):
                     points = np.array(polygon, np.int32)
                     top_left_x, top_left_y, h, w = cv2.boundingRect(points)
 
-                    if w > h:
-                        k = w
-                    else:
-                        k = h
+                    if (
+                        (w >= self.min_side_of_box)
+                        or (h >= self.min_side_of_box)
+                    ):
 
-                    top_left_x = xc - int(k/2)
-                    top_left_y = yc + int(k/2)
+                        if w > h:
+                            k = w
+                        else:
+                            k = h
 
-                    top_right_x = xc + int(k/2)
-                    top_right_y = yc + int(k/2)
+                        top_left_x = xc - int(k/2)
+                        top_left_y = yc + int(k/2)
 
-                    bottom_left_x = xc - int(k/2)
-                    bottom_left_y = yc - int(k/2)
+                        top_right_x = xc + int(k/2)
+                        top_right_y = yc + int(k/2)
 
-                    bottom_right_x = xc + int(k/2)
-                    bottom_right_y = yc - int(k/2)
+                        bottom_left_x = xc - int(k/2)
+                        bottom_left_y = yc - int(k/2)
 
-                    annotations.append((
-                        top_left_x, top_left_y,
-                        top_right_x, top_right_y,
-                        bottom_left_x, bottom_left_y,
-                        bottom_right_x, bottom_right_y))
+                        bottom_right_x = xc + int(k/2)
+                        bottom_right_y = yc - int(k/2)
+
+                        annotations.append((
+                            top_left_x, top_left_y,
+                            top_right_x, top_right_y,
+                            bottom_left_x, bottom_left_y,
+                            bottom_right_x, bottom_right_y))
 
         return annotations
 
@@ -290,9 +323,10 @@ class VehiculesFixedSizeImageLoader(ImageLoader):
 
     def __init__(
             self,
-            bnd_box_size: Tuple[int, int]
+            bnd_box_size: Tuple[int, int],
+            min_side_of_box: int = 0
     ):
-        super().__init__()
+        super().__init__(min_side_of_box)
         self.bnd_box_size = bnd_box_size
 
     def read_bnd_boxes(
@@ -300,6 +334,10 @@ class VehiculesFixedSizeImageLoader(ImageLoader):
             annotation_file: str,
             image: np.array
     ) -> List[Set[float]]:
+        # TODO loader to fix
+        # TODO add ifs like in squre loaders
+        # TODO add min_side_of_box
+        # TODO clean code
 
         annotations = []
 
@@ -340,6 +378,7 @@ class VehiculesFixedSizeImageLoader(ImageLoader):
 
 
 class DOTASquareImageLoader(ImageLoader):
+
     def read_bnd_boxes(
             self,
             annotation_file: str,
@@ -368,11 +407,13 @@ class DOTASquareImageLoader(ImageLoader):
                     points = np.array(polygon, np.int32)
                     top_left_x, top_left_y, h, w = cv2.boundingRect(points)
 
-                    xc = top_left_x + int(w / 2)
-                    yc = top_left_y + int(h / 2)
+                    if (
+                        (w >= self.min_side_of_box)
+                        or (h >= self.min_side_of_box)
+                    ):
 
-                    if (w > 40) or (h > 40):
-                        # TODO as parameter in every loader
+                        xc = top_left_x + int(w / 2)
+                        yc = top_left_y + int(h / 2)
 
                         if w > h:
                             k = w
