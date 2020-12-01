@@ -1,5 +1,6 @@
 import os
 import zipfile
+import shutil
 
 import requests
 
@@ -36,13 +37,28 @@ def save_response_content(response, destination):
                 f.write(chunk)
 
 
-def download(out_dir: str) -> None:
+def download(file_id, out_dir: str, unpack=True, zip_name='') -> None:
     download_file_from_google_drive(
-        '1K0otRJumAI3HR_KgNDn1AU2MtwMzcTse',
-        './raw.zip'
+        file_id,
+        './temp_do_not_remove.zip'
     )
 
-    with zipfile.ZipFile('./raw.zip', 'r') as zip_ref:
-        zip_ref.extractall(out_dir)
+    if unpack:
+        with zipfile.ZipFile('./temp_do_not_remove.zip', 'r') as zip_ref:
+            zip_ref.extractall(out_dir)
 
-    os.remove('./raw.zip')
+        os.remove('./temp_do_not_remove.zip')
+    else:
+        os.rename('./temp_do_not_remove.zip', zip_name)
+        if out_dir.endswith('/'):
+            out_dir = out_dir[0:-1]
+        shutil.move('./'+zip_name, out_dir)
+
+
+def cat(outfilename, *infilenames):
+    with open(outfilename, 'w') as outfile:
+        for infilename in infilenames:
+            with open(infilename) as infile:
+                for line in infile:
+                    if line.strip():
+                        outfile.write(line)
