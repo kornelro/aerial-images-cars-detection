@@ -7,7 +7,7 @@ import logging
 import random
 from tqdm import tqdm
 from pathlib import Path
-from dotenv import find_dotenv, load_dotenv
+# from dotenv import find_dotenv, load_dotenv
 from ..features.pipelines import RawImageToFeatures
 
 
