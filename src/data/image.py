@@ -10,11 +10,13 @@ class Image:
     def __init__(
         self,
         image: np.array,
-        bnd_boxes: List[Set[float]]
+        bnd_boxes: List[Set[float]],
+        image_dir: str
     ) -> None:
 
         self.image = image
         self.bnd_boxes = bnd_boxes
+        self.image_dir = image_dir
 
     def get_car(
         self,
