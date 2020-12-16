@@ -20,6 +20,7 @@ class ImageLoader(ABC):
     ) -> None:
 
         image: np.array = cv2.imread(image_dir)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         with open(annotation_dir, 'r') as f:
             annotation_file: str = f.read()
             bnd_boxes = self.read_bnd_boxes(annotation_file, image)
