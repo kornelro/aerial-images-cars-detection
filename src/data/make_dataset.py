@@ -1,27 +1,16 @@
 # -*- coding: utf-8 -*-
-from src.features.build_features import build_features
-from src.data.dataset_loaders import DatasetLoader
-from typing import List, Tuple
-import click
 import logging
+import pickle
 import random
+from typing import Tuple
+
 from tqdm import tqdm
-from pathlib import Path
-# from dotenv import find_dotenv, load_dotenv
+
+from ..features.build_features import build_features
 from ..features.pipelines import RawImageToFeatures
+from .dataset_loaders import DatasetLoader
 
 
-# @click.command()
-# @click.argument('input_folder_filepath', type=click.Path(exists=True))
-# @click.argument('output_filepath', type=click.Path())
-# @click.argument('dataset_loader', type=DatasetLoader)
-# @click.argument('images_files_type', type=Tuple[str])
-# @click.argument('annotations_files_type', type=Tuple[str])
-# @click.argument('process_pipeline', type=RawImageToFeatures)
-# @click.argument('negative_images_size', type=Tuple[int, int])
-# @click.argument('negative_examples_size', type=float)
-# @click.argument('workers', type=int)
-# @click.argument('verbose', type=bool)
 def make_dataset(
     input_folder_filepath: str,
     output_filepath: str,
@@ -82,19 +71,8 @@ def make_dataset(
         workers=workers
     )
 
-    # TODO save to file
+    logger.info('Saving pickle...')
+    with open(output_filepath, 'wb') as f:
+        pickle.dump(data, f)
+
     return data
-
-
-# if __name__ == '__main__':
-#     log_fmt = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-#     logging.basicConfig(level=logging.INFO, format=log_fmt)
-
-#     # not used in this stub but often useful for finding various files
-#     project_dir = Path(__file__).resolve().parents[2]
-
-#     # find .env automagically by walking up directories until it's found, then
-#     # load up the .env entries as environment variables
-#     load_dotenv(find_dotenv())
-
-#     make_dataset()

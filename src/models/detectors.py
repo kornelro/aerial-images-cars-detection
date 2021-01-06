@@ -134,17 +134,19 @@ class NNSliderDetector(Detector):
         sliding_window: Slider,
         process_pipeline: RawImageToImage,
         classifier: NNClassifier,
+        treshold: float = None
     ):
         super().__init__()
         self.sliding_window = sliding_window
         self.process_pipeline = process_pipeline
         self.classifier = classifier
+        self.treshold = treshold
 
     def detect(
         self,
         image: Image,
-        workers: int = 0,
-        verbose: bool = True,
+        verbose: bool = 0.5,
+        workers: int = 0
     ) -> List[Set[float]]:
 
         detected_bnd_boxes = []
@@ -153,10 +155,10 @@ class NNSliderDetector(Detector):
         cropped_images = [
             self.process_pipeline.process(image.get_car(b)) for b in bnd_boxes
         ]
-        predictions = self.classifier.predict(cropped_images)
+        probes = self.classifier.predict(cropped_images)
 
-        for i in range(len(predictions)):
-            if predictions[i] == 1:
+        for i in range(len(probes)):
+            if probes[i] > self.treshold:
                 detected_bnd_boxes.append(bnd_boxes[i])
 
         return detected_bnd_boxes
