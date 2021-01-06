@@ -38,6 +38,8 @@ def train_resnet(
         model = K.models.Sequential()
         model.add(res_model)
         model.add(K.layers.Flatten())
+        # model.add(K.layers.Dense(10, activation='relu'))
+        # model.add(K.layers.Dense(5, activation='relu'))
         model.add(K.layers.Dense(2, activation='softmax'))
 
     model.compile(
