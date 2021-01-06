@@ -31,7 +31,7 @@ class Detector(ABC):
         and list of detected boxes
         """
 
-        bnd_boxes = self.detect(image, workers, verbose)
+        bnd_boxes = self._detect(image, workers, verbose)
         image = image.image
         for bnd_box in bnd_boxes:
             image = cv2.rectangle(
@@ -45,7 +45,7 @@ class Detector(ABC):
         return (image, bnd_boxes)
 
     @abstractmethod
-    def detect(
+    def _detect(
         self,
         image: np.array,
         workers: int = 0,
@@ -53,6 +53,74 @@ class Detector(ABC):
         
     ) -> List[Set[float]]:
         pass
+
+    def _nms(
+        self,
+        detected_bnd_boxes: List[Set[float]],
+        detected_bnd_boxes_probes: List[float],
+        overlap: float
+    ):
+
+        print(len(detected_bnd_boxes))
+        boxes = []
+        for i in range(len(detected_bnd_boxes)):
+            boxes.append(
+                [
+                    detected_bnd_boxes[i][4],  # x1
+                    detected_bnd_boxes[i][5],  # y1
+                    detected_bnd_boxes[i][2],  # x2
+                    detected_bnd_boxes[i][3],  # y2
+                    detected_bnd_boxes_probes[i]  # prob
+                ]
+            )
+
+        # boxes is a list of size (n x 5)
+        # trial is a numpy array of size (n x 5)
+        # Author: Vicky
+
+        if not boxes:
+            pick = []
+        else:
+            trial = np.zeros((len(boxes), 5), dtype=np.float64)
+            trial[:] = boxes[:]
+            x1 = trial[:, 0]
+            y1 = trial[:, 1]
+            x2 = trial[:, 2]
+            y2 = trial[:, 3]
+            score = trial[:, 4]
+            area = (x2 - x1 + 1) * (y2 - y1 + 1)
+
+            # vals = sort(score)
+            i_array = np.argsort(score)
+            pick = []
+            count = 1
+            while (i_array.size != 0):
+                # print "Iteration:",count
+                last = i_array.size
+                i = i_array[last-1]
+                pick.append(i)
+                suppress = [last-1]
+                for pos in range(last-1):
+                    j = i_array[pos]
+                    xx1 = max(x1[i], x1[j])
+                    yy1 = max(y1[i], y1[j])
+                    xx2 = min(x2[i], x2[j])
+                    yy2 = min(y2[i], y2[j])
+                    w = xx2 - xx1 + 1
+                    h = yy2 - yy1 + 1
+                    if (w > 0 and h > 0):
+                        o = w * h / area[j]
+                        print("Overlap is", o)
+                        if (o > overlap):
+                            suppress.append(pos)
+                i_array = np.delete(i_array, suppress)
+                count = count + 1
+
+        nms_bnd_boxes = []
+        nms_bnd_boxes = list(map(lambda idx: detected_bnd_boxes[idx], pick))
+        print(len(nms_bnd_boxes))
+
+        return nms_bnd_boxes
 
 
 class SliderDetector(Detector):
@@ -68,7 +136,7 @@ class SliderDetector(Detector):
         self.process_pipeline = process_pipeline
         self.classifier = classifier
 
-    def detect(
+    def _detect(
         self,
         image: Image,
         workers: int = 0,
@@ -134,22 +202,25 @@ class NNSliderDetector(Detector):
         sliding_window: Slider,
         process_pipeline: RawImageToImage,
         classifier: NNClassifier,
-        treshold: float = None
+        treshold: float = 0.5,
+        nms_overlap: float = 0.5
     ):
         super().__init__()
         self.sliding_window = sliding_window
         self.process_pipeline = process_pipeline
         self.classifier = classifier
         self.treshold = treshold
+        self.nms_overlap = nms_overlap
 
-    def detect(
+    def _detect(
         self,
         image: Image,
-        verbose: bool = 0.5,
+        verbose: bool = True,
         workers: int = 0
     ) -> List[Set[float]]:
 
         detected_bnd_boxes = []
+        detected_bnd_boxes_probes = []
 
         bnd_boxes = [b for b in self.sliding_window(image.image)]
         cropped_images = [
@@ -160,5 +231,10 @@ class NNSliderDetector(Detector):
         for i in range(len(probes)):
             if probes[i] > self.treshold:
                 detected_bnd_boxes.append(bnd_boxes[i])
+                detected_bnd_boxes_probes.append(probes[i])
 
-        return detected_bnd_boxes
+        return self._nms(
+            detected_bnd_boxes,
+            detected_bnd_boxes_probes,
+            self.nms_overlap
+        )
