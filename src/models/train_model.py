@@ -1,6 +1,33 @@
 import tensorflow.keras as K
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.svm import SVC
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+
+def train_svm(
+    data,
+    test_size: float = 0.33,
+    probability: bool = False,
+    random_state=42
+):
+    X = list(map(lambda x: x[1], data))
+    y = list(map(lambda x: x[2], data))
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y,
+        test_size=test_size,
+        random_state=random_state
+    )
+    clf = make_pipeline(
+        StandardScaler(),
+        SVC(gamma='auto', probability=probability)
+    )
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+
+    return clf, classification_report(y_test, y_pred)
 
 
 def train_resnet(

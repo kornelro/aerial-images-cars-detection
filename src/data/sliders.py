@@ -33,8 +33,12 @@ class SlidingWindow(Slider):
         image: np.array
     ) -> Generator[Set[float], None, None]:
 
-        for bottom_left_x in range(0, image.shape[1], self.step_size):
-            for bottom_left_y in range(0, image.shape[0], self.step_size):
+        for bottom_left_x in range(
+            0, image.shape[1] - self.step_size, self.step_size
+        ):
+            for bottom_left_y in range(
+                0, image.shape[0] - self.step_size, self.step_size
+            ):
 
                 top_left_x = bottom_left_x
                 top_left_y = bottom_left_y + self.window_size[1]

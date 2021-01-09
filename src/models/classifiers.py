@@ -9,12 +9,12 @@ class Classifier(ABC):
     @abstractmethod
     def predict(
         self,
-        features: np.array
-    ) -> int:
+        features: List[np.array]
+    ) -> List[int]:
         pass
 
 
-class NNClassifier(ABC):
+class ProbClassifier(ABC):
 
     @abstractmethod
     def predict(
@@ -27,7 +27,19 @@ class NNClassifier(ABC):
         pass
 
 
-class ResnetModelWrapper(NNClassifier):
+class ProbSVMModelWrapper(ProbClassifier):
+
+    def __init__(self, model):
+        self.model = model
+
+    def predict(self, x):
+        probes = self.model.predict_proba(x)
+        probes = list(map(lambda x: x[1], probes))
+
+        return probes
+
+
+class ResnetModelWrapper(ProbClassifier):
 
     def __init__(self, model):
         self.model = model
