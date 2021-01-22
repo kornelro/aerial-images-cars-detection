@@ -87,3 +87,48 @@ class NormImage(Processor):
     ) -> np.array:
 
         return image / self.max_v
+
+
+class Blur(Processor):
+
+    def __init__(
+        self,
+        kernel_size: Tuple[int, int] = (5, 5)
+    ):
+        super().__init__()
+        self.kernel_size = kernel_size
+
+    def process(
+        self,
+        image: np.array
+    ) -> np.array:
+
+        image = cv2.GaussianBlur(
+            image,
+            self.kernel_size,
+            cv2.BORDER_DEFAULT)
+
+        return image
+
+
+class EqualHist(Processor):
+
+    def __init__(
+        self
+    ):
+        super().__init__()
+
+    def process(
+        self,
+        image: np.array
+    ) -> np.array:
+
+        R, G, B = cv2.split(image)
+
+        output1_R = cv2.equalizeHist(R)
+        output1_G = cv2.equalizeHist(G)
+        output1_B = cv2.equalizeHist(B)
+
+        equ = cv2.merge((output1_R, output1_G, output1_B))
+
+        return equ
