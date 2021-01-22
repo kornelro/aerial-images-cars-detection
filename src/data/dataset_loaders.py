@@ -93,6 +93,8 @@ class VehiculesDatasetLoader(DatasetLoader):
                         imgs.append(img_wit_ann)
                 except FileNotFoundError:
                     print('No file', ann_dir)
+                except Exception:
+                    print('Cannot read file', ann_dir)
 
         return imgs
 
