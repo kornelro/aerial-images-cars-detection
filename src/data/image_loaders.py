@@ -439,3 +439,73 @@ class DOTASquareImageLoader(ImageLoader):
                             bottom_right_x, bottom_right_y))
 
         return annotations
+
+
+class DOTAFixedSizeImageLoader(ImageLoader):
+
+    def __init__(
+            self,
+            bnd_box_size: Tuple[int, int],
+            min_side_of_box: int = 0
+    ):
+        super().__init__(min_side_of_box)
+        self.bnd_box_size = bnd_box_size
+
+    def read_bnd_boxes(
+            self,
+            annotation_file: str,
+            image: np.array
+    ) -> List[Set[float]]:
+
+        annotations = []
+
+        for ann_row in annotation_file.split('\n'):
+            if (len(ann_row) > 0):
+                ann_row = ann_row.split(' ')
+
+                if (
+                    (len(ann_row) == 10)  # porper annotation
+                    and (ann_row[8] == 'small-vehicle')  # object is a car
+                    # and (ann_row[9] == '0')  # not difficult to detect
+                ):
+                    # TODO consider other values
+
+                    x_1, y_1 = int(float(ann_row[0])), int(float(ann_row[1]))
+                    x_2, y_2 = int(float(ann_row[2])), int(float(ann_row[3]))
+                    x_3, y_3 = int(float(ann_row[4])), int(float(ann_row[5]))
+                    x_4, y_4 = int(float(ann_row[6])), int(float(ann_row[7]))
+
+                    polygon = [[x_1, y_1], [x_2, y_2], [x_3, y_3], [x_4, y_4]]
+                    points = np.array(polygon, np.int32)
+                    top_left_x, top_left_y, h, w = cv2.boundingRect(points)
+
+                    if (
+                        (w >= self.min_side_of_box)
+                        or (h >= self.min_side_of_box)
+                    ):
+
+                        xc = top_left_x + int(w / 2)
+                        yc = top_left_y + int(h / 2)
+
+                        w = self.bnd_box_size[0]
+                        h = self.bnd_box_size[1]
+
+                        top_left_x = xc - int(w / 2)
+                        top_left_y = yc + int(h / 2)
+
+                        top_right_x = xc + int(w / 2)
+                        top_right_y = yc + int(h / 2)
+
+                        bottom_left_x = xc - int(w / 2)
+                        bottom_left_y = yc - int(h / 2)
+
+                        bottom_right_x = xc + int(w / 2)
+                        bottom_right_y = yc - int(h / 2)
+
+                        annotations.append((
+                            top_left_x, top_left_y,
+                            top_right_x, top_right_y,
+                            bottom_left_x, bottom_left_y,
+                            bottom_right_x, bottom_right_y))
+
+        return annotations
