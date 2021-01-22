@@ -260,7 +260,7 @@ class SliderProbDetector(Detector):
                     h = yy2 - yy1 + 1
                     if (w > 0 and h > 0):
                         o = w * h / area[j]
-                        print("Overlap is", o)
+                        # print("Overlap is", o)
                         if (o > overlap):
                             suppress.append(pos)
                 i_array = np.delete(i_array, suppress)
@@ -268,6 +268,6 @@ class SliderProbDetector(Detector):
 
         nms_bnd_boxes = []
         nms_bnd_boxes = list(map(lambda idx: detected_bnd_boxes[idx], pick))
-        print(len(nms_bnd_boxes))
+        # print(len(nms_bnd_boxes))
 
         return nms_bnd_boxes

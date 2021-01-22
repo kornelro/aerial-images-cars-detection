@@ -5,6 +5,7 @@ data/external/
 data/interim/
 data/processed/
 data/raw/
+models/svm/*
 
 
 # Byte-compiled / optimized / DLL files
