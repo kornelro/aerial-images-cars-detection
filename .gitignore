@@ -6,6 +6,7 @@ data/interim/
 data/processed/
 data/raw/
 models/svm/*
+*/processed_images/*
 
 
 # Byte-compiled / optimized / DLL files
