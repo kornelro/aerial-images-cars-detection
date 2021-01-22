@@ -24,24 +24,24 @@ class Detector(ABC):
         image: Image,
         workers: int = 0,
         verbose: bool = True
-    ) -> Tuple[np.array, List[Set[float]]]:
+    ) -> Tuple[Image, np.array, List[Set[float]]]:
         """
         Returns image with drawed detected boxes
         and list of detected boxes
         """
 
         bnd_boxes = self._detect(image, workers)
-        image = image.image
+        image_array = image.image
         for bnd_box in bnd_boxes:
-            image = cv2.rectangle(
-                image,
+            image_array = cv2.rectangle(
+                image_array,
                 (bnd_box[4], bnd_box[5]),
                 (bnd_box[2], bnd_box[3]),
                 (0, 255, 0),
                 2
             )
 
-        return (image, bnd_boxes)
+        return image_array, bnd_boxes, image
 
     @abstractmethod
     def _detect(
