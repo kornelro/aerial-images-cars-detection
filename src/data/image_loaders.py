@@ -575,19 +575,23 @@ class OrtoFixedSizeImageLoader(ImageLoader):
 
         for ann in json_object['items'][0]['annotations']:
             bbox = ann['bbox']
-            top_left_x = int(bbox[0])
-            top_left_y = int(bbox[1])
+
+            c_x = int(bbox[0]) + int(bbox[2] / 2)
+            c_y = int(bbox[1]) + int(bbox[3] / 2)
             width = self.bnd_box_size[0]
             height = self.bnd_box_size[1]
+
+            top_left_x = c_x - int(self.bnd_box_size[0] / 2)
+            top_left_y = c_y + int(self.bnd_box_size[1] / 2)
 
             top_right_x = top_left_x + width
             top_right_y = top_left_y
 
             bottom_left_x = top_left_x
-            bottom_left_y = top_left_y + height
+            bottom_left_y = top_left_y - height
 
-            bottom_right_x = top_left_x + width
-            bottom_right_y = top_left_y + height
+            bottom_right_x = bottom_left_x + width
+            bottom_right_y = top_right_y - height
 
             annotations.append((
                 top_left_x, top_left_y,
