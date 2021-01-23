@@ -3,7 +3,7 @@ from .image import Image
 from abc import ABC, abstractmethod
 import numpy as np
 from typing import List, Set, Tuple
-
+import json
 
 class ImageLoader(ABC):
 
@@ -507,5 +507,49 @@ class DOTAFixedSizeImageLoader(ImageLoader):
                             top_right_x, top_right_y,
                             bottom_left_x, bottom_left_y,
                             bottom_right_x, bottom_right_y))
+
+        return annotations
+
+
+class OrtoFixedImageLoader(ImageLoader):
+
+    def __init__(
+            self,
+            bnd_box_size: Tuple[int, int],
+            min_side_of_box: int = 0
+    ):
+        super().__init__(min_side_of_box)
+        self.bnd_box_size = bnd_box_size
+
+    def read_bnd_boxes(
+            self,
+            annotation_file: str,
+            image: np.array
+    ) -> List[Set[float]]:
+        annotations = []
+
+        json_object = json.loads(annotation_file)
+
+        for ann in json_object['items'][0]['annotations']:
+            bbox = ann['bbox']
+            top_left_x = int(bbox[0])
+            top_left_y = int(bbox[1])
+            width = int(bbox[2])
+            height = int(bbox[3])
+
+            top_right_x = top_left_x + width
+            top_right_y = top_left_y
+
+            bottom_left_x = top_left_x
+            bottom_left_y = top_left_y + height
+
+            bottom_right_x = top_left_x + width
+            bottom_right_y = top_left_y + height
+
+            annotations.append((
+                top_left_x, top_left_y,
+                top_right_x, top_right_y,
+                bottom_left_x, bottom_left_y,
+                bottom_right_x, bottom_right_y))
 
         return annotations
