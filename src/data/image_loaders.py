@@ -5,6 +5,7 @@ import numpy as np
 from typing import List, Set, Tuple
 import json
 
+
 class ImageLoader(ABC):
 
     def __init__(
@@ -511,7 +512,7 @@ class DOTAFixedSizeImageLoader(ImageLoader):
         return annotations
 
 
-class OrtoFixedImageLoader(ImageLoader):
+class OrtoFixedSizeImageLoader(ImageLoader):
 
     def __init__(
             self,
