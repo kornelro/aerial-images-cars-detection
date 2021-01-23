@@ -584,10 +584,10 @@ class OrtoFixedSizeImageLoader(ImageLoader):
             top_right_y = top_left_y
 
             bottom_left_x = top_left_x
-            bottom_left_y = top_left_y + height
+            bottom_left_y = top_left_y - height
 
             bottom_right_x = top_left_x + width
-            bottom_right_y = top_left_y + height
+            bottom_right_y = top_left_y - height
 
             annotations.append((
                 top_left_x, top_left_y,
