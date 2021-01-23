@@ -50,7 +50,7 @@ class ResnetModelWrapper(ProbClassifier):
         batches = np.array_split(images, round(len(images)/200))
         for batch in batches:
             batch = np.stack(batch, 0)
-            print(batch.shape)
+            # print(batch.shape)
             preds = self.model.predict(batch)
             for pred in preds:
                 # results.append(np.argmax(pred))
