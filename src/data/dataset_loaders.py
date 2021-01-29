@@ -23,7 +23,6 @@ class DatasetLoader(ABC):
         annotations_files_types: List[str],
         verbose: bool
     ) -> List[Image]:
-        # TODO parallel loading
         pass
 
 

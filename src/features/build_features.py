@@ -23,7 +23,6 @@ def build_features(
 
     features_with_classes = []
     if parallel:
-        # TODO how to do parallel if we care about images order
         with Pool(workers) as p:
             features_with_classes = p.map(
                 partial(

@@ -54,7 +54,6 @@ class AerialCarsImageLoader(ImageLoader):
             ann_row = ann_row.split(' ')
 
             if ann_row[0] == '0':
-                # TODO consider other classes
 
                 xc = int(image.shape[1] * float(ann_row[1]))
                 yc = int(image.shape[0] * float(ann_row[2]))
@@ -101,7 +100,6 @@ class AerialCarsSquareImageLoader(ImageLoader):
             ann_row = ann_row.split(' ')
 
             if ann_row[0] == '0':
-                # TODO consider other classes
 
                 xc = int(image.shape[1] * float(ann_row[1]))
                 yc = int(image.shape[0] * float(ann_row[2]))
@@ -161,7 +159,6 @@ class AerialCarsFixedSizeImageLoader(ImageLoader):
             ann_row = ann_row.split(' ')
 
             if ann_row[0] == '0':
-                # TODO consider other classes
 
                 xc = int(image.shape[1] * float(ann_row[1]))
                 yc = int(image.shape[0] * float(ann_row[2]))
@@ -204,9 +201,6 @@ class VehiculesImageLoader(ImageLoader):
             annotation_file: str,
             image: np.array
     ) -> List[Set[float]]:
-        # TODO loader to fix
-        # TODO add min_side_of_box
-        # TODO clean code
 
         annotations = []
 
@@ -273,8 +267,6 @@ class VehiculesSquareImageLoader(ImageLoader):
                     and (ann_row[4] == '1')  # entirely in image
                     and (ann_row[5] == '0')  # not occluded
                 ):
-                    # TODO consider other values
-                    # TODO similar ifs for othe Vehicules loaders
 
                     xc = int(float(ann_row[0]))
                     yc = int(float(ann_row[1]))
@@ -334,10 +326,6 @@ class VehiculesFixedSizeImageLoader(ImageLoader):
             annotation_file: str,
             image: np.array
     ) -> List[Set[float]]:
-        # TODO loader to fix
-        # TODO add ifs like in squre loaders
-        # TODO add min_side_of_box
-        # TODO clean code
 
         annotations = []
 
@@ -397,7 +385,6 @@ class DOTASquareImageLoader(ImageLoader):
                     and (ann_row[8] == 'small-vehicle')  # object is a car
                     # and (ann_row[9] == '0')  # not difficult to detect
                 ):
-                    # TODO consider other values
 
                     x_1, y_1 = int(float(ann_row[0])), int(float(ann_row[1]))
                     x_2, y_2 = int(float(ann_row[2])), int(float(ann_row[3]))
@@ -469,7 +456,6 @@ class DOTAFixedSizeImageLoader(ImageLoader):
                     and (ann_row[8] == 'small-vehicle')  # object is a car
                     # and (ann_row[9] == '0')  # not difficult to detect
                 ):
-                    # TODO consider other values
 
                     x_1, y_1 = int(float(ann_row[0])), int(float(ann_row[1]))
                     x_2, y_2 = int(float(ann_row[2])), int(float(ann_row[3]))
