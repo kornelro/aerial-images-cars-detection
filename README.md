@@ -13,7 +13,7 @@ Datasets
 ------------
 - [aerial-cars-dataset](https://github.com/jekhor/aerial-cars-dataset)
 - [VEDAI](https://downloads.greyc.fr/vedai/) (named *vehicules* in the project)
-- small dataset to test detection knowledge generalization and test parking detection method prepared by project authors based on orthophotomap of Wroclaw city (named *orto* and *orto_parkings* in the project)
+- small dataset to test detection knowledge generalization and test parking detection method prepared by project authors based on orthophotomap of Wroclaw city (named *orto* and *orto_parkings* in the project, available [here](https://github.com/kornelro/aerial-images))
 
 Outcome
 ------------
