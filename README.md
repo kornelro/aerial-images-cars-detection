@@ -1,4 +1,4 @@
-cv_project
+aerial-images-cars-detection
 ==============================
 
 This project is an assingment for Computer Vision course at Wroclaw Univ. of Science and Technology. 
@@ -9,21 +9,21 @@ Main project goal was cars detection in aerial images using sliding window and t
 
 Datasets
 ------------
-- aerial
-- vedai
-- prepared
+- [aerial-cars-dataset](https://github.com/jekhor/aerial-cars-dataset)
+- [VEDAI](https://downloads.greyc.fr/vedai/)
+- small dataset to test knowledge generalization prepared by project authors based on orthophotomap of Wroclaw city.
 
 Outcome
 ------------
-Table below presents best results gained among all exepriments. For dataset prepared by authors models trained on aerial-cars-dataset have been used.
+Table below presents best results gained among all experiments. For dataset prepared by authors models trained on aerial-cars-dataset have been used.
 
 ![Table](./assets/table.png)
 
-Most interesting aoutcome is neural network good knowledge generalization on prepared dataset. Images below shows sample results of detections on this dataset:
+Most interesting outcome is neural network good knowledge generalization on prepared dataset. Images below shows sample results of detections on this dataset:
 
 ![Sample_detections](./assets/images.png)
 
-Full report covers all experiments and cocnlusions is available [here]() (polish language only). 
+Full report covers all experiments and conclusions is available [here]() (polish language only). 
 
 --------
 
